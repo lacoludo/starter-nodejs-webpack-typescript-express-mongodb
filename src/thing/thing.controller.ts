@@ -1,10 +1,10 @@
 import fs from 'fs'
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 import ThingModel from './thing.model'
 
-export const readThings = (req: Request, res: Response, next: NextFunction) => {
-  ThingModel.find()
+export const readThings = async (req: Request, res: Response) => {
+  await ThingModel.find()
     .then(things => {
       res.status(200).json(things)
     })
@@ -15,11 +15,7 @@ export const readThings = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-export const createThing = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createThing = async (req: Request, res: Response) => {
   req.body.thing = JSON.parse(req.body.thing)
   const url = req.protocol + '://' + req.get('host')
   const thing = new ThingModel({
@@ -29,7 +25,7 @@ export const createThing = (
     price: req.body.thing.price,
     userId: req.body.thing.userId
   })
-  thing
+  await thing
     .save()
     .then(() => {
       res.status(201).json({
@@ -43,8 +39,8 @@ export const createThing = (
     })
 }
 
-export const readThing = (req: Request, res: Response, next: NextFunction) => {
-  ThingModel.findOne({
+export const readThing = async (req: Request, res: Response) => {
+  await ThingModel.findOne({
     _id: req.params.id
   })
     .then(thing => {
@@ -57,11 +53,7 @@ export const readThing = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-export const updateThing = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateThing = async (req: Request, res: Response) => {
   let thing: any = new ThingModel({ _id: req.params._id })
   if (req.file) {
     const url = req.protocol + '://' + req.get('host')
@@ -84,7 +76,7 @@ export const updateThing = (
       userId: req.body.userId
     }
   }
-  ThingModel.updateOne({ _id: req.params.id }, thing)
+  await ThingModel.updateOne({ _id: req.params.id }, thing)
     .then(() => {
       res.status(201).json({
         message: 'Thing updated successfully!'
@@ -97,12 +89,8 @@ export const updateThing = (
     })
 }
 
-export const deleteThing = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  ThingModel.findOne({ _id: req.params.id }).then((thing: any) => {
+export const deleteThing = async (req: Request, res: Response) => {
+  await ThingModel.findOne({ _id: req.params.id }).then((thing: any) => {
     const filename = thing.imageUrl.split('/images/')[1]
     fs.unlink('images/' + filename, () => {
       ThingModel.deleteOne({ _id: req.params.id })

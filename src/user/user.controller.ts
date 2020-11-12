@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 import UserModel from './user.model'
 
-export const signup = (req: Request, res: Response, next: NextFunction) => {
-  bcrypt.hash(req.body.password, 10).then(hash => {
+export const signup = async (req: Request, res: Response) => {
+  await bcrypt.hash(req.body.password, 10).then(hash => {
     const user = new UserModel({
       email: req.body.email,
       password: hash
@@ -25,8 +25,8 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
   })
 }
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  UserModel.findOne({ email: req.body.email })
+export const login = async (req: Request, res: Response) => {
+  await UserModel.findOne({ email: req.body.email })
     .then((user: any) => {
       if (!user) {
         return res.status(401).json({

@@ -1,4 +1,4 @@
-# Starter Node.js Webpack TypeScript Express MongoDB
+# Starter: Node.js, Webpack, TypeScript, Express & MongoDB
 
 ## dotenv
 
